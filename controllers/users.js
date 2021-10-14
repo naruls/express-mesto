@@ -47,17 +47,21 @@ module.exports.updateUser = (req, res) => {
     .orFail(new Error('NotFound'))
     .catch((err) => {
       if (err.massege === 'NotFound') {
-        res.status(404).send({ message: `Пользователь не найден: ${err}` });
+        res.status(404).send({ message: `Нет пользователя с указанным id: ${err}` });
       }
     })
+    .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: `Ошибка валидации: ${err}` });
         return;
       }
-      res.status(400).send({ message: `Переданы некорректные данные: ${err}` });
-    })
-    .then((user) => res.send({ data: user }));
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: `Некорректный id: ${err}` });
+        return;
+      }
+      res.status(500).send({ message: `Ошибка сервера: ${err}` });
+    });
 };
 
 module.exports.updateAvatar = (req, res) => {
@@ -71,12 +75,16 @@ module.exports.updateAvatar = (req, res) => {
         res.status(404).send({ message: `Пользователь не найден: ${err}` });
       }
     })
+    .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: `Ошибка валидации: ${err}` });
         return;
       }
-      res.status(400).send({ message: `Переданы некорректные данные: ${err}` });
-    })
-    .then((user) => res.send({ data: user }));
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: `Некорректный id: ${err}` });
+        return;
+      }
+      res.status(500).send({ message: `Ошибка сервера: ${err}` });
+    });
 };
