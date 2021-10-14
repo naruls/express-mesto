@@ -11,18 +11,14 @@ module.exports.getUsers = (req, res) => {
 module.exports.getCurrentUser = (req, res) => {
   User.findById(req.params._id)
     .orFail(new Error('NotFound'))
-    .catch((err) => {
-      if (err.massege === 'NotFound') {
-        res.status(404).send({ message: `Пользователь не найден: ${err}` });
-      }
-    })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'CastError') {
         res.status(400).send({ message: `Некорректный id: ${err}` });
-        return;
+      } else if (err.massege === 'NotFound') {
+        res.status(404).send({ message: `Пользователь по указанному _id не найден: ${err}` });
       }
-      res.status(500).send({ message: `Ошибка сервера: ${err}` });
+      res.status(500).send({ message: `Ошибка по умолчанию: ${err}` });
     });
 };
 
@@ -32,10 +28,10 @@ module.exports.createUser = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: `Ошибка валидации: ${err}` });
+        res.status(400).send({ message: `Переданы некорректные данные при создании пользователя: ${err}` });
         return;
       }
-      res.status(500).send({ message: `Ошибка сервера: ${err}` });
+      res.status(500).send({ message: `Ошибка по умолчанию: ${err}` });
     });
 };
 
@@ -45,22 +41,16 @@ module.exports.updateUser = (req, res) => {
     { name, about },
     { new: true })
     .orFail(new Error('NotFound'))
-    .catch((err) => {
-      if (err.massege === 'NotFound') {
-        res.status(404).send({ message: `Нет пользователя с указанным id: ${err}` });
-      }
-    })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: `Ошибка валидации: ${err}` });
-        return;
+        res.status(400).send({ message: `Переданы некорректные данные при обновлении профиля: ${err}` });
+      } else if (err.name === 'CastError') {
+        res.status(400).send({ message: `Переданы некорректные данные при обновлении профиля: ${err}` });
+      } else if (err.massege === 'NotFound') {
+        res.status(404).send({ message: `Пользователь с указанным _id не найден: ${err}` });
       }
-      if (err.name === 'CastError') {
-        res.status(400).send({ message: `Некорректный id: ${err}` });
-        return;
-      }
-      res.status(500).send({ message: `Ошибка сервера: ${err}` });
+      res.status(500).send({ message: `Ошибка по умолчанию: ${err}` });
     });
 };
 
@@ -70,21 +60,15 @@ module.exports.updateAvatar = (req, res) => {
     { avatar },
     { new: true })
     .orFail(new Error('NotFound'))
-    .catch((err) => {
-      if (err.massege === 'NotFound') {
-        res.status(404).send({ message: `Пользователь не найден: ${err}` });
-      }
-    })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: `Ошибка валидации: ${err}` });
-        return;
+        res.status(400).send({ message: `Переданы некорректные данные при обновлении профиля: ${err}` });
+      } else if (err.name === 'CastError') {
+        res.status(400).send({ message: `Переданы некорректные данные при обновлении профиля: ${err}` });
+      } else if (err.massege === 'NotFound') {
+        res.status(404).send({ message: `Пользователь с указанным _id не найден: ${err}` });
       }
-      if (err.name === 'CastError') {
-        res.status(400).send({ message: `Некорректный id: ${err}` });
-        return;
-      }
-      res.status(500).send({ message: `Ошибка сервера: ${err}` });
+      res.status(500).send({ message: `Ошибка по умолчанию: ${err}` });
     });
 };
