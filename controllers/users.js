@@ -15,7 +15,7 @@ module.exports.getCurrentUser = (req, res) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         res.status(400).send({ message: `Некорректный id: ${err}` });
-      } else if (err.massege === 'NotFound') {
+      } else if (err.message === 'NotFound') {
         res.status(404).send({ message: `Пользователь по указанному _id не найден: ${err}` });
       }
       res.status(500).send({ message: `Ошибка по умолчанию: ${err}` });
