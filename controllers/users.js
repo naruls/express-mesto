@@ -47,7 +47,7 @@ module.exports.updateUser = (req, res) => {
         res.status(400).send({ message: `Переданы некорректные данные при обновлении профиля: ${err}` });
       } else if (err.name === 'CastError') {
         res.status(400).send({ message: `Переданы некорректные данные при обновлении профиля: ${err}` });
-      } else if (err.massege === 'NotFound') {
+      } else if (err.message === 'NotFound') {
         res.status(404).send({ message: `Пользователь с указанным _id не найден: ${err}` });
       }
       res.status(500).send({ message: `Ошибка по умолчанию: ${err}` });
@@ -66,7 +66,7 @@ module.exports.updateAvatar = (req, res) => {
         res.status(400).send({ message: `Переданы некорректные данные при обновлении профиля: ${err}` });
       } else if (err.name === 'CastError') {
         res.status(400).send({ message: `Переданы некорректные данные при обновлении профиля: ${err}` });
-      } else if (err.massege === 'NotFound') {
+      } else if (err.message === 'NotFound') {
         res.status(404).send({ message: `Пользователь с указанным _id не найден: ${err}` });
       }
       res.status(500).send({ message: `Ошибка по умолчанию: ${err}` });
