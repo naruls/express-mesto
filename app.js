@@ -1,10 +1,12 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const { errors } = require('celebrate');
+const cookieParser = require('cookie-parser');
 const users = require('./routes/users');
 const cards = require('./routes/cards');
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
+const validator = require('./middlewares/validator');
 require('dotenv').config();
 
 const app = express();
@@ -16,16 +18,14 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 
 app.use(express.json());
 
-app.post('/signin', login);
-app.post('/signup', createUser);
+app.use(cookieParser());
+
+app.post('/signin', validator, login);
+app.post('/signup', validator, createUser);
 
 app.use('/', auth, users);
 
 app.use('/', auth, cards);
-
-app.use('*', (req, res) => {
-  res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });
-});
 
 app.use(errors());
 
@@ -37,8 +37,9 @@ app.use((err, req, res, next) => {
     .send({
       message: statusCode === 500
         ? 'На сервере произошла ошибка'
-        : message
+        : message,
     });
+  next();
 });
 
 app.listen(PORT, () => {

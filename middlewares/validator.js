@@ -1,6 +1,6 @@
 const { celebrate, Joi } = require('celebrate');
 
-const result = new RegExp('^((ftp|http|https):\/\/)?(www\.)?([A-Za-zА-Яа-я0-9]{1}[A-Za-zА-Яа-я0-9\-]*\.?)*\.{1}[A-Za-zА-Яа-я0-9-]{2,8}(\/([\w#!:.?+=&%@!\-\/])*)?');
+const result = new RegExp('^((ftp|http|https):\/\/)?(www\.)?([A-Za-zА-Яа-я0-9]{1}[A-Za-zА-Яа-я0-9\-]*\.?)*\.{1}[A-Za-zА-Яа-я0-9-]{2,8}(\/([\w#!:.?+=&%@!\-\/])*)?'); //eslint-disable-line
 
 const Url = (value) => {
   if (result.test(value)) {
@@ -25,15 +25,15 @@ const Login = celebrate({
 const Card = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
-    link: Joi.string().required(),
+    link: Joi.string().pattern(result).required(),
   }),
 });
 
 const User = celebrate({
   body: Joi.object().keys({
-    name: Joi.string().required().min(2).max(30),
-    about: Joi.string().required().min(2).max(20),
-    avatar: Joi.string().custom(Url).required(),
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(20),
+    avatar: Joi.string().custom(Url),
     email: Joi.string().required().email(),
     password: Joi.string().required().min(8),
   }),
