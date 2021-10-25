@@ -21,9 +21,7 @@ module.exports.getCurrentUser = (req, res, next) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new CastError({ message: `Некорректный id: ${err}` });
-      } else if (err.message === 'NotFound') {
-        throw new NotFoundError({ message: `Пользователь по указанному _id не найден: ${err}` });
+        next(new CastError('Некорректный id'));
       } else {
         next(err);
       }
@@ -47,7 +45,7 @@ module.exports.createUser = (req, res, next) => {
     about,
     avatar,
     email,
-    password,
+    password, //eslint-disable-line
   } = req.body;
   bcrypt.hash(req.body.password, 10)
     .then((hash) => User.create({
@@ -57,12 +55,19 @@ module.exports.createUser = (req, res, next) => {
       email,
       password: hash,
     }))
-    .then((user) => res.send({ data: user }))
+    .then(() => res.status(200).send({
+      data: {
+        name,
+        about,
+        avatar,
+        email,
+      },
+    }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new ValidationError({ message: `Переданы некорректные данные при создании пользователя: ${err}` });
-      } else if (err.name === 'MongoError') {
-        throw new MongoError({ message: 'Такой Email уже занят' });
+        next(new ValidationError('Переданы некорректные данные при создании пользователя'));
+      } else if (err.name === 'MongoServerError' && err.code === 11000) {
+        next(new MongoError('Такой Email уже занят'));
       } else {
         next(err);
       }
@@ -78,11 +83,9 @@ module.exports.updateUser = (req, res, next) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new ValidationError({ message: `Переданы некорректные данные при обновлении профиля: ${err}` });
+        next(new ValidationError('Переданы некорректные данные при обновлении профиля'));
       } else if (err.name === 'CastError') {
-        throw new CastError({ message: `Переданы некорректные данные при обновлении профиля: ${err}` });
-      } else if (err.message === 'NotFound') {
-        throw new NotFoundError({ message: `Пользователь с указанным _id не найден: ${err}` });
+        next(new CastError('Переданы некорректные данные при обновлении профиля'));
       } else {
         next(err);
       }
@@ -98,18 +101,16 @@ module.exports.updateAvatar = (req, res, next) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new ValidationError({ message: `Переданы некорректные данные при обновлении профиля: ${err}` });
+        next(new ValidationError('Переданы некорректные данные при обновлении профиля'));
       } else if (err.name === 'CastError') {
-        throw new CastError({ message: `Переданы некорректные данные при обновлении профиля: ${err}` });
-      } else if (err.message === 'NotFound') {
-        throw new NotFoundError({ message: `Пользователь с указанным _id не найден: ${err}` });
+        next(new CastError('Переданы некорректные данные при обновлении профиля'));
       } else {
         next(err);
       }
     });
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
@@ -127,6 +128,6 @@ module.exports.login = (req, res) => {
         .send({ message: 'Авторизация прошла успешно' });
     })
     .catch(() => {
-      throw new LoginError({ message: 'Неверный логин либо пароль' });
+      next(new LoginError('Неверный логин либо пароль'));
     });
 };
