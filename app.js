@@ -6,7 +6,7 @@ const users = require('./routes/users');
 const cards = require('./routes/cards');
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
-const validator = require('./middlewares/validator');
+const { Login, User } = require('./middlewares/validator');
 require('dotenv').config();
 
 const app = express();
@@ -20,8 +20,8 @@ app.use(express.json());
 
 app.use(cookieParser());
 
-app.post('/signin', validator, login);
-app.post('/signup', validator, createUser);
+app.post('/signin', Login, login);
+app.post('/signup', User, createUser);
 
 app.use('/', auth, users);
 
