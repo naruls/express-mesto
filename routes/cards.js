@@ -10,8 +10,10 @@ const {
 
 card.get('/cards', getCards);
 card.post('/cards', Card, createCard);
-card.delete('/cards/:cardId', Id, deleteCard);
+card.delete('/cards/:_id', Id, deleteCard);
 card.put('/cards/:_id/likes', Id, likeCard);
 card.delete('/cards/:_id/likes', Id, dislikeCard);
 
 module.exports = card;
+
+/* Большое спасибо за подробное объяснение ошибок! */
