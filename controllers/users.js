@@ -17,7 +17,7 @@ module.exports.getUsers = (req, res, next) => {
 
 module.exports.getCurrentUser = (req, res, next) => {
   User.findById(req.params._id)
-    .orFail(() => new NotFoundError({ message: 'Нет пользователя с таким id' }))
+    .orFail(() => new NotFoundError('Нет пользователя с таким id'))
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -79,7 +79,7 @@ module.exports.updateUser = (req, res, next) => {
   User.findByIdAndUpdate(req.user._id,
     { name, about },
     { new: true, runValidators: true })
-    .orFail(() => new NotFoundError({ message: 'Нет пользователя с таким id' }))
+    .orFail(() => new NotFoundError('Нет пользователя с таким id'))
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -97,7 +97,7 @@ module.exports.updateAvatar = (req, res, next) => {
   User.findByIdAndUpdate(req.user._id,
     { avatar },
     { new: true, runValidators: true })
-    .orFail(() => new NotFoundError({ message: 'Нет пользователя с таким id' }))
+    .orFail(() => new NotFoundError('Нет пользователя с таким id'))
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
